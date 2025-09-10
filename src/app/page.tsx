@@ -1,5 +1,6 @@
 import { CalorieEstimator } from '@/components/calorie-estimator';
 import { Leaf } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -21,7 +22,7 @@ export default function Home() {
         </main>
         <footer className="mt-12 text-center text-sm text-muted-foreground">
           <p>
-            Integrate with your mobile app via the POST endpoint at <code className="font-code bg-muted p-1 rounded-md">/api/estimate-calories</code>.
+            Integrate with your mobile app via the POST endpoint at <code className="font-code bg-muted p-1 rounded-md">/api/estimate-calories</code>. Check out the <Link href="/api-docs" className="underline text-primary">API Documentation</Link>.
           </p>
         </footer>
       </div>
