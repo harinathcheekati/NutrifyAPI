@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef, type ChangeEvent, type DragEvent } from 'react';
+import { useState, useRef, type ChangeEvent, type DragEvent, useContext } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, UploadCloud, Flame, UtensilsCrossed } from 'lucide-react';
+import { AuthContext } from '@/context/auth-context';
 
 type EstimationResult = {
   estimatedCalories: number;
@@ -29,6 +30,7 @@ export function CalorieEstimator() {
   const [result, setResult] = useState<EstimationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useContext(AuthContext);
 
   const handleFile = (file: File) => {
     if (!file) return;
@@ -76,6 +78,14 @@ export function CalorieEstimator() {
       });
       return;
     }
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Not authenticated",
+        description: "Please log in to estimate calories.",
+      });
+      return;
+    }
 
     setIsLoading(true);
     setResult(null);
@@ -88,7 +98,7 @@ export function CalorieEstimator() {
         const response = await fetch('/api/estimate-calories', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ foodPhotoDataUri: base64data }),
+          body: JSON.stringify({ foodPhotoDataUri: base64data, userId: user.uid }),
         });
 
         const data = await response.json();

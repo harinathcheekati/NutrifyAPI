@@ -7,8 +7,8 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
  * @swagger
  * /api/estimate-calories:
  *   post:
- *     summary: Estimate calories from a food image
- *     description: Takes a food image as a data URI and returns an estimated calorie count and a list of ingredients.
+ *     summary: Estimate calories from a food image for a logged-in user
+ *     description: Takes a food image as a data URI and a userId, returns an estimated calorie count, and saves it to the user's history.
  *     requestBody:
  *       required: true
  *       content:
@@ -18,54 +18,52 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
  *             properties:
  *               foodPhotoDataUri:
  *                 type: string
- *                 description: "A photo of a food item, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+ *                 description: "A photo of a food item, as a data URI."
+ *               userId:
+ *                 type: string
+ *                 description: "The ID of the logged-in user."
  *     responses:
  *       200:
  *         description: Successful estimation
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 estimatedCalories:
- *                   type: number
- *                   description: The estimated calorie count of the food item.
- *                 ingredients:
- *                   type: string
- *                   description: The list of ingredients identified in the food item.
- *                 protein:
- *                   type: number
- *                   description: The estimated protein in grams.
- *                 carbs:
- *                   type: number
- *                   description: The estimated carbohydrates in grams.
- *                 sugar:
- *                   type: number
- *                   description: The estimated sugar in grams.
- *                 fiber:
- *                   type: number
- *                   description: The estimated fiber in grams.
- *                 fat:
- *                   type: number
- *                   description: The estimated fat in grams.
- *                 portion:
- *                   type: string
- *                   description: The estimated portion size in grams.
- *                 quantity:
- *                   type: number
- *                   description: The estimated quantity of the item.
+ *               $ref: '#/components/schemas/EstimationResult'
  *       400:
- *         description: Bad Request, missing foodPhotoDataUri
+ *         description: Bad Request, missing required fields
  *       500:
  *         description: Internal Server Error
+ * components:
+ *   schemas:
+ *     EstimationResult:
+ *       type: object
+ *       properties:
+ *         estimatedCalories:
+ *           type: number
+ *         ingredients:
+ *           type: string
+ *         protein:
+ *           type: number
+ *         carbs:
+ *           type: number
+ *         sugar:
+ *           type: number
+ *         fiber:
+ *           type: number
+ *         fat:
+ *           type: number
+ *         portion:
+ *           type: string
+ *         quantity:
+ *           type: number
  */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { foodPhotoDataUri } = body;
+    const { foodPhotoDataUri, userId } = body;
 
-    if (!foodPhotoDataUri) {
-      return NextResponse.json({ error: 'Missing foodPhotoDataUri' }, { 
+    if (!foodPhotoDataUri || !userId) {
+      return NextResponse.json({ error: 'Missing foodPhotoDataUri or userId' }, { 
         status: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -81,6 +79,7 @@ export async function POST(request: Request) {
     try {
       await addDoc(collection(db, "estimations"), {
         ...result,
+        userId: userId,
         imageUrl: foodPhotoDataUri,
         createdAt: serverTimestamp()
       });

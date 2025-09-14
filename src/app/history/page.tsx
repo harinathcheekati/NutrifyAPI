@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -22,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, RefreshCw, Flame, UtensilsCrossed } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { AuthContext } from '@/context/auth-context';
 
 type EstimationHistoryItem = {
   id: string;
@@ -38,11 +40,14 @@ export default function HistoryPage() {
   const [history, setHistory] = useState<EstimationHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { user, loading } = useContext(AuthContext);
+  const router = useRouter();
 
   const fetchHistory = async () => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      const response = await fetch("/api/history");
+      const response = await fetch(`/api/history?userId=${user.uid}`);
       if (!response.ok) {
         throw new Error("Failed to fetch history");
       }
@@ -61,8 +66,24 @@ export default function HistoryPage() {
   };
 
   useEffect(() => {
-    fetchHistory();
-  }, []);
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+  
+  useEffect(() => {
+    if(user) {
+      fetchHistory();
+    }
+  }, [user]);
+
+  if (loading || !user) {
+     return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-8">
