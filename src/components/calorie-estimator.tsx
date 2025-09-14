@@ -4,12 +4,20 @@ import { useState, useRef, type ChangeEvent, type DragEvent } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UploadCloud, Flame, Carrot, UtensilsCrossed } from 'lucide-react';
+import { Loader2, UploadCloud, Flame, UtensilsCrossed } from 'lucide-react';
 
 type EstimationResult = {
   estimatedCalories: number;
   ingredients: string;
+  protein: number;
+  carbs: number;
+  sugar: number;
+  fiber: number;
+  fat: number;
+  portion: string;
+  quantity: number;
 };
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -145,7 +153,7 @@ export function CalorieEstimator() {
               <p className="mt-4 text-muted-foreground">Analyzing your meal...</p>
             </div>
           ) : result ? (
-            <div className="space-y-6 w-full animate-in fade-in duration-500">
+            <div className="space-y-4 w-full animate-in fade-in duration-500">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">Estimated Calories</p>
                 <div className="flex items-baseline justify-center gap-2 mt-1">
@@ -154,10 +162,38 @@ export function CalorieEstimator() {
                   <span className="text-xl text-muted-foreground">kcal</span>
                 </div>
               </div>
-              <div className="space-y-2">
-                 <h3 className="flex items-center gap-2 font-semibold"><Carrot className="w-5 h-5 text-primary" /> Ingredients</h3>
-                 <p className="text-sm text-foreground font-code bg-muted/50 p-3 rounded-md max-h-32 overflow-y-auto">{result.ingredients}</p>
-              </div>
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">Portion</TableCell>
+                    <TableCell className="text-right">{result.portion}</TableCell>
+                  </TableRow>
+                   <TableRow>
+                    <TableCell className="font-medium">Quantity</TableCell>
+                    <TableCell className="text-right">{result.quantity}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Protein</TableCell>
+                    <TableCell className="text-right">{result.protein.toFixed(2)}g</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Carbs</TableCell>
+                    <TableCell className="text-right">{result.carbs.toFixed(2)}g</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Fat</TableCell>
+                    <TableCell className="text-right">{result.fat.toFixed(2)}g</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Sugar</TableCell>
+                    <TableCell className="text-right">{result.sugar.toFixed(2)}g</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Fiber</TableCell>
+                    <TableCell className="text-right">{result.fiber.toFixed(2)}g</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">

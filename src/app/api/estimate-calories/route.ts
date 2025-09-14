@@ -31,6 +31,27 @@ import { estimateCaloriesFromImage, type EstimateCaloriesFromImageInput } from '
  *                 ingredients:
  *                   type: string
  *                   description: The list of ingredients identified in the food item.
+ *                 protein:
+ *                   type: number
+ *                   description: The estimated protein in grams.
+ *                 carbs:
+ *                   type: number
+ *                   description: The estimated carbohydrates in grams.
+ *                 sugar:
+ *                   type: number
+ *                   description: The estimated sugar in grams.
+ *                 fiber:
+ *                   type: number
+ *                   description: The estimated fiber in grams.
+ *                 fat:
+ *                   type: number
+ *                   description: The estimated fat in grams.
+ *                 portion:
+ *                   type: string
+ *                   description: The estimated portion size in grams.
+ *                 quantity:
+ *                   type: number
+ *                   description: The estimated quantity of the item.
  *       400:
  *         description: Bad Request, missing foodPhotoDataUri
  *       500:

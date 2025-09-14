@@ -29,6 +29,13 @@ const EstimateCaloriesFromImageOutputSchema = z.object({
   ingredients: z
     .string()
     .describe('The list of ingredients identified in the food item.'),
+  protein: z.number().describe('The estimated protein in grams.'),
+  carbs: z.number().describe('The estimated carbohydrates in grams.'),
+  sugar: z.number().describe('The estimated sugar in grams.'),
+  fiber: z.number().describe('The estimated fiber in grams.'),
+  fat: z.number().describe('The estimated fat in grams.'),
+  portion: z.string().describe('The estimated portion size in grams.'),
+  quantity: z.number().describe('The estimated quantity of the item.'),
 });
 export type EstimateCaloriesFromImageOutput = z.infer<
   typeof EstimateCaloriesFromImageOutputSchema
@@ -46,8 +53,8 @@ const prompt = ai.definePrompt({
   output: {schema: EstimateCaloriesFromImageOutputSchema},
   prompt: `You are a nutrition expert. You will be given a photo of a food item.
 
-    You will identify the ingredients in the food item, and then estimate the calorie count.
-    Return the calorie count as a number, and list the ingredients.
+    You will identify the ingredients in the food item, and then estimate the calorie count and other nutritional information.
+    Return the calorie count, protein, carbs, sugar, fiber, fat, portion size, and quantity.
 
     Photo: {{media url=foodPhotoDataUri}}
 
