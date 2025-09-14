@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { estimateCaloriesFromImage, type EstimateCaloriesFromImageInput } from '@/ai/flows/estimate-calories-from-image';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 /**
  * @swagger
@@ -75,6 +77,18 @@ export async function POST(request: Request) {
 
     const input: EstimateCaloriesFromImageInput = { foodPhotoDataUri };
     const result = await estimateCaloriesFromImage(input);
+
+    try {
+      await addDoc(collection(db, "estimations"), {
+        ...result,
+        imageUrl: foodPhotoDataUri,
+        createdAt: serverTimestamp()
+      });
+    } catch (dbError) {
+      console.error("Failed to write to Firestore:", dbError);
+      // We don't want to fail the request if only the DB write fails
+    }
+
 
     return NextResponse.json(result, {
       headers: {
