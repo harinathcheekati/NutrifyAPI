@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { estimateCaloriesFromImage, type EstimateCaloriesFromImageInput } from '@/ai/flows/estimate-calories-from-image';
-import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAdminDb } from '@/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 /**
  * @swagger
@@ -77,11 +77,12 @@ export async function POST(request: Request) {
     const result = await estimateCaloriesFromImage(input);
 
     try {
-      await addDoc(collection(db, "estimations"), {
+      const adminDb = getAdminDb();
+      await adminDb.collection("estimations").add({
         ...result,
         userId: userId,
         imageUrl: foodPhotoDataUri,
-        createdAt: serverTimestamp()
+        createdAt: FieldValue.serverTimestamp()
       });
     } catch (dbError) {
       console.error("Failed to write to Firestore:", dbError);
@@ -115,7 +116,7 @@ export async function OPTIONS() {
   return NextResponse.json({}, {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-control-allow-methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     }
   });

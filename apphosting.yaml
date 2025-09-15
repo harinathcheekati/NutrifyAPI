@@ -1,7 +1,15 @@
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
+# The runtime to use for the build and serving process
+runtime: nodejs20
 
-runConfig:
-  # Increase this value if you'd like to automatically spin up
-  # more instances in response to increased traffic.
-  maxInstances: 1
+# A list of commands that are executed to build the app
+build:
+- npm install
+- npm run build
+
+# The command that starts the web server
+run: npm run start
+
+# Environment variables that are available to the build and run steps
+env:
+  - variable: FIREBASE_SERVICE_ACCOUNT_KEY
+    secret: FIREBASE_SERVICE_ACCOUNT_KEY

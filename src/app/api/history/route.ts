@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
+import { getAdminDb } from '@/lib/firebase-admin';
 
 export async function GET(request: Request) {
   try {
@@ -11,15 +10,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Missing userId parameter' }, { status: 400 });
     }
 
-    const estimationsRef = collection(db, "estimations");
-    const q = query(
-        estimationsRef, 
-        where("userId", "==", userId), 
-        orderBy("createdAt", "desc"), 
-        limit(50)
-    );
+    const adminDb = getAdminDb();
+    const estimationsRef = adminDb.collection("estimations");
+    const q = estimationsRef
+        .where("userId", "==", userId)
+        .orderBy("createdAt", "desc")
+        .limit(50);
     
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await q.get();
     const history = querySnapshot.docs.map(doc => {
       const data = doc.data();
       return {

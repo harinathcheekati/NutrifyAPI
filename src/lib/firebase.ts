@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
+const db = getFirestore(app, "nutrify");
 const auth = getAuth(app);
 
 export { db, auth };
