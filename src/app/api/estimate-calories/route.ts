@@ -77,9 +77,13 @@ export async function POST(request: Request) {
     const result = await estimateCaloriesFromImage(input);
 
     try {
+      console.log("Saving estimation result to Firestore...");
+      console.log("Initializing Firebase Admin SDK..." + process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
       const adminDb = getAdminDb();
+      const safeResult = JSON.parse(JSON.stringify(result));
+      console.log("Saving estimation result to Firestore:", safeResult);
       await adminDb.collection("estimations").add({
-        ...result,
+        ...safeResult,
         userId: userId,
         imageUrl: foodPhotoDataUri,
         createdAt: FieldValue.serverTimestamp()
