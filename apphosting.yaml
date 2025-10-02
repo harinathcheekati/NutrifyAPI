@@ -9,6 +9,3 @@ build:
 # The command that starts the web server
 run:
   command: npm run start
-  env:
-    - variable: FIREBASE_SERVICE_ACCOUNT_KEY
-      secret: FIREBASE_SERVICE_ACCOUNT_KEY
