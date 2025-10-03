@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 
     try {
       console.log("Saving estimation result to Firestore...");
-      console.log("Initializing Firebase Admin SDK..." + process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+      //console.log("Initializing Firebase Admin SDK..." + process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
       const adminDb = getAdminDb();
       const safeResult = JSON.parse(JSON.stringify(result));
       console.log("Saving estimation result to Firestore:", safeResult);
