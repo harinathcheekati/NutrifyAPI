@@ -21,6 +21,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 // lib/firebase.ts or similar
 
 export const db = getDatabase(app);
+export const auth = getAuth(app);
 
 //export { db, auth };
 
