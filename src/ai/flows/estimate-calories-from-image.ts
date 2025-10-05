@@ -2,14 +2,11 @@
 
 /**
  * @fileOverview Estimates the calorie count of a food image.
- *
- * - estimateCaloriesFromImage - A function that handles the calorie estimation process.
- * - EstimateCaloriesFromImageInput - The input type for the estimateCaloriesFromImage function.
- * - EstimateCaloriesFromImageOutput - The return type for the estimateCaloriesFromImage function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { model } from 'genkit/plugin';
+import { z } from 'zod'; // Changed from 'genkit' to 'zod'
 
 const EstimateCaloriesFromImageInputSchema = z.object({
   foodPhotoDataUri: z
@@ -27,7 +24,7 @@ const EstimateCaloriesFromImageOutputSchema = z.object({
     .number()
     .describe('The estimated calorie count of the food item.'),
   ingredients: z
-    .string()
+    .array(z.string())
     .describe('The list of ingredients identified in the food item.'),
   protein: z.number().describe('The estimated protein in grams.'),
   carbs: z.number().describe('The estimated carbohydrates in grams.'),
@@ -47,20 +44,54 @@ export async function estimateCaloriesFromImage(
   return estimateCaloriesFromImageFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'estimateCaloriesFromImagePrompt',
-  input: {schema: EstimateCaloriesFromImageInputSchema},
-  output: {schema: EstimateCaloriesFromImageOutputSchema},
-  prompt: `You are a nutrition expert. You will be given a photo of a food item.
+const prompt = ai.definePrompt(
+  {
+    name: 'estimateCaloriesFromImagePrompt',
+    input: {
+      schema: EstimateCaloriesFromImageInputSchema,
+    },
+    output: {
+      format: 'json',
+      schema: EstimateCaloriesFromImageOutputSchema,
+    },
+  },
+  async (input) => {
+    // Extract MIME type from data URI
+    const mimeTypeMatch = input.foodPhotoDataUri.match(/^data:([^;]+);base64,/);
+    const contentType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
 
-    You will identify the ingredients in the food item, and then estimate the calorie count and other nutritional information.
-    Return the calorie count, protein, carbs, sugar, fiber, fat, portion size, and quantity.
+    return {
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              text: `You are a nutrition expert. You will be given a photo of a food item.
 
-    Photo: {{media url=foodPhotoDataUri}}
-
-    Respond in JSON format.
-    `,
-});
+You will identify the ingredients in the food item, and then estimate the calorie count and other nutritional information.
+Return the following information in JSON format:
+- estimatedCalories: number
+- ingredients: array of strings
+- protein: number (grams)
+- carbs: number (grams)
+- sugar: number (grams)
+- fiber: number (grams)
+- fat: number (grams)
+- portion: string (portion size)
+- quantity: number`,
+            },
+            {
+              media: {
+                url: input.foodPhotoDataUri,
+                contentType: contentType,
+              },
+            },
+          ],
+        },
+      ],
+    };
+  }
+);
 
 const estimateCaloriesFromImageFlow = ai.defineFlow(
   {
@@ -68,11 +99,29 @@ const estimateCaloriesFromImageFlow = ai.defineFlow(
     inputSchema: EstimateCaloriesFromImageInputSchema,
     outputSchema: EstimateCaloriesFromImageOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    if (!output) {
+  async (input) => {
+    const result = await prompt(input);
+    if (!result || !result.output) {
       throw new Error('Failed to get a response from the AI model.');
     }
-    return output;
+    return result.output;
   }
 );
+
+// ------------------------------
+// OPTIONAL TESTING WITH SDK ONLY
+// ------------------------------
+
+// Uncomment if you want to check models directly without Genkit
+
+/*
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+async function listModels() {
+  const result = await genAI.listModels();
+  console.log(result);
+}
+listModels();
+*/

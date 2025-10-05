@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     }
 
     const adminDb = getAdminDb();
-    const estimationsRef = adminDb.collection("estimations");
+    const estimationsRef = adminDb.collection("user_food_logs_history");
     const q = estimationsRef
         .where("userId", "==", userId)
         .orderBy("createdAt", "desc")

@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { estimateCaloriesFromImage, type EstimateCaloriesFromImageInput } from '@/ai/flows/estimate-calories-from-image';
 import { getAdminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
-
+import { db } from '@/lib/firebase';
+import * as admin from 'firebase-admin';
 /**
  * @swagger
  * /api/estimate-calories:
@@ -72,7 +73,7 @@ export async function POST(request: Request) {
         } 
       });
     }
-
+    
     const input: EstimateCaloriesFromImageInput = { foodPhotoDataUri };
     const result = await estimateCaloriesFromImage(input);
 
@@ -80,14 +81,18 @@ export async function POST(request: Request) {
       console.log("Saving estimation result to Firestore...");
       //console.log("Initializing Firebase Admin SDK..." + process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
       const adminDb = getAdminDb();
+    
+    
       const safeResult = JSON.parse(JSON.stringify(result));
       console.log("Saving estimation result to Firestore:", safeResult);
-      await adminDb.collection("estimations").add({
+      await adminDb.collection ("user_food_logs_history").add({
         ...safeResult,
         userId: userId,
         imageUrl: foodPhotoDataUri,
         createdAt: FieldValue.serverTimestamp()
       });
+
+      console.log("Estimation result saved successfully.");
     } catch (dbError) {
       console.error("Failed to write to Firestore:", dbError);
       // We don't want to fail the request if only the DB write fails
@@ -115,6 +120,7 @@ export async function POST(request: Request) {
     });
   }
 }
+
 
 export async function OPTIONS() {
   return NextResponse.json({}, {
