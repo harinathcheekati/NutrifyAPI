@@ -5,13 +5,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY!,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN!,
-  projectId: process.env.FIREBASE_PROJECT_ID!,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET!,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID!,
-  appId: process.env.FIREBASE_APP_ID!,
-  databaseURL: process.env.FIREBASE_DATABASE_URL!, // ✅ important
+  apiKey: "AIzaSyDwVVHlJdGElJ4i5QUytYLiKAsWAjYwxU0",
+  authDomain: "studio-8456827210-c1c4f.firebaseapp.com",
+  projectId: "studio-8456827210-c1c4f",
+  storageBucket: "studio-8456827210-c1c4f.firebasestorage.app",
+  messagingSenderId: "274766777922",
+  appId: "1:274766777922:web:1d582eb7ae673eca90a7db",
+  databaseURL: "https://studio-8456827210-c1c4f.firebaseio.com", // ✅ important
 };
 
 // Initialize Firebase safely
