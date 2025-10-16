@@ -98,7 +98,7 @@ export function CalorieEstimator() {
         const response = await fetch('/api/estimate-calories', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ foodPhotoDataUri: base64data, userId: user.uid }),
+          body: JSON.stringify({ foodPhotoDataUri: base64data, userId: user.email }),
         });
 
         const data = await response.json();
@@ -156,7 +156,7 @@ export function CalorieEstimator() {
           <CardTitle>Analysis Result</CardTitle>
           <CardDescription>AI-powered nutrition insights.</CardDescription>
         </CardHeader>
-        <CardContent className="h-[340px] flex items-center justify-center">
+        <CardContent className="min-h-[340px] flex items-center justify-center">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Loader2 className="w-12 h-12 animate-spin text-primary" />
@@ -168,39 +168,39 @@ export function CalorieEstimator() {
                 <p className="text-sm text-muted-foreground">Estimated Calories</p>
                 <div className="flex items-baseline justify-center gap-2 mt-1">
                   <Flame className="w-8 h-8 text-accent" />
-                  <span className="text-6xl font-bold">{result.estimatedCalories}</span>
-                  <span className="text-xl text-muted-foreground">kcal</span>
+                  <span className="text-5xl sm:text-6xl font-bold">{result.estimatedCalories}</span>
+                  <span className="text-lg sm:text-xl text-muted-foreground">kcal</span>
                 </div>
               </div>
               <Table>
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-medium">Portion</TableCell>
-                    <TableCell className="text-right">{result.portion}</TableCell>
+                    <TableCell className="text-left">{result.portion}</TableCell>
                   </TableRow>
                    <TableRow>
                     <TableCell className="font-medium">Quantity</TableCell>
-                    <TableCell className="text-right">{result.quantity}</TableCell>
+                    <TableCell className="text-left">{result.quantity}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Protein</TableCell>
-                    <TableCell className="text-right">{result.protein.toFixed(2)}g</TableCell>
+                    <TableCell className="text-left">{result.protein.toFixed(2)}g</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Carbs</TableCell>
-                    <TableCell className="text-right">{result.carbs.toFixed(2)}g</TableCell>
+                    <TableCell className="text-left">{result.carbs.toFixed(2)}g</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Fat</TableCell>
-                    <TableCell className="text-right">{result.fat.toFixed(2)}g</TableCell>
+                    <TableCell className="text-left">{result.fat.toFixed(2)}g</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Sugar</TableCell>
-                    <TableCell className="text-right">{result.sugar.toFixed(2)}g</TableCell>
+                    <TableCell className="text-left">{result.sugar.toFixed(2)}g</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Fiber</TableCell>
-                    <TableCell className="text-right">{result.fiber.toFixed(2)}g</TableCell>
+                    <TableCell className="text-left">{result.fiber.toFixed(2)}g</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

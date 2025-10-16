@@ -47,7 +47,7 @@ export default function HistoryPage() {
     if (!user) return;
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/history?userId=${user.uid}`);
+      const response = await fetch(`/api/history?userId=${user.email}`);
       if (!response.ok) {
         throw new Error("Failed to fetch history");
       }
